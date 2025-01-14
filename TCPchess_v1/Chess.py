@@ -76,6 +76,7 @@ class Game:
 		self.board[6, 7] = Piece(Colour.BLACK, PieceType.HORSE)
 		self.board[7, 7] = Piece(Colour.BLACK, PieceType.ROOK)
 
+	
 	def sees(self, l, n): #all squeres a piece can see
 		squares = []
 
@@ -193,92 +194,49 @@ class Game:
 
 
 		elif pieceType == PieceType.ROOK:
-			#positive x
-			i = l+1
-			while i < 8 and not self.board[i, n]: #append untill end of board or piece in the way
-				squares.append((i, n))
-				i+=1
-			if i < 8 and self.board[i, n].colour != self.board[l, n].colour: # add to list if you can take that piece
-				squares.append((i, n))
+			directions = [(1,0), (0, 1), (-1, 0), (0, -1)]
 
-			#positive y
-			j = n+1
-			while j < 8 and not self.board[l, j]: #append untill end of board or piece in the way
-				squares.append((l, j))
-				j+=1
-			if j < 8 and self.board[l, j].colour != self.board[l, n].colour: # add to list if you can take that piece
-				squares.append((l, j))
+			for letter, number in directions:
+				new_letter, new_number = l, n
+				while 0 <= new_letter+letter < 8 and 0 <= new_number+number < 8 and not self.board[new_letter+letter, new_number+number]:
+					new_letter+=letter
+					new_number+=number
+					squares.append((new_letter, new_number))
 
-			#negative x
-			i = l-1
-			while i >= 0 and not self.board[i, n]: #append untill end of board or piece in the way
-				squares.append((i, n))
-				i-=1
-			if i >= 0 and self.board[i, n].colour != self.board[l, n].colour: # add to list if you can take that piece
-				squares.append((i, n))
+				new_letter+=letter
+				new_number+=number
+				if 0 <= new_letter < 8 and 0 <= new_number < 8 and self.board[new_letter, new_number].colour != self.board[new_letter, new_number].colour: # add to list if you can take the next piece
+					squares.append((new_letter, new_number))
 
-			#negative y
-			j = n-1
-			while j >= 0 and not self.board[l, j]: #append untill end of board or piece in the way
-				squares.append((l, j))
-				j-=1
-			if j >= 0 and self.board[l, j].colour != self.board[l, n].colour: # add to list if you can take that piece
-				squares.append((l, j))
-		
 		elif pieceType == PieceType.BISHOP:
-			#45
-			i = l+1
-			j = n+1
-			while i < 8 and j < 8 and not self.board[i, j]: #append untill end of board or piece in the way
-				squares.append((i, j))
-				i+=1
-				j+=1
-			if i < 8 and j <8 and self.board[i, j].colour != self.board[l, n].colour: # add to list if you can take that piece
-				squares.append((i, j))
+			directions = [(1,1), (-1, 1), (-1, -1), (1, -1)]
 
-			#135
-			i = l-1
-			j = n+1
-			while i >= 0 and j < 8 and not self.board[i, j]: #append untill end of board or piece in the way
-				squares.append((i, j))
-				i-=1
-				j+=1
-			if i >= 0 and j < 8 and self.board[i, j].colour != self.board[l, n].colour: # add to list if you can take that piece
-				squares.append((i, j))
+			for letter, number in directions:
+				new_letter, new_number = l, n
+				while 0 <= new_letter+letter < 8 and 0 <= new_number+number < 8 and not self.board[new_letter+letter, new_number+number]:
+					new_letter+=letter
+					new_number+=number
+					squares.append((new_letter, new_number))
 
-			#225
-			i = l-1
-			j = n-1
-			while i >= 0 and j >= 0 and not self.board[i, j]: #append untill end of board or piece in the way
-				squares.append((i, j))
-				i-=1
-				j-=1
-			if i >= 0 and j >= 0 and self.board[i, j].colour != self.board[l, n].colour: # add to list if you can take that piece
-				squares.append((i, j))
-
-			#315
-			i = l+1
-			j = n-1
-			while i < 8 and j >= 0 and not self.board[i, j]: #append untill end of board or piece in the way
-				squares.append((i, j))
-				i+=1
-				j-=1
-			if i < 8 and j >= 0 and self.board[i, j].colour != self.board[l, n].colour: # add to list if you can take that piece
-				squares.append((i, j))
+				new_letter+=letter
+				new_number+=number
+				if 0 <= new_letter < 8 and 0 <= new_number < 8 and self.board[new_letter, new_number].colour != self.board[new_letter, new_number].colour: # add to list if you can take the next piece
+					squares.append((new_letter, new_number))
 
 		elif pieceType == PieceType.QUEEN:
-			#calculate the squares by exxchanging it to a rook, a biachop, and then adding the squares and returning it back to a queen
-			newRook = Piece(self.board[l, n].colour, PieceType.ROOK)
-			newBishop = Piece(self.board[l, n].colour, PieceType.BISHOP)
+			directions = [(1,0), (1,1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]
 
-			self.board[l, n] = newRook
-			straight_squares = self.sees(l, n)
+			for letter, number in directions:
+				new_letter, new_number = l, n
+				while 0 <= new_letter+letter < 8 and 0 <= new_number+number < 8 and not self.board[new_letter+letter, new_number+number]:
+					new_letter+=letter
+					new_number+=number
+					squares.append((new_letter, new_number))
 
-			self.board[l, n] = newBishop
-			gay_squares = self.sees(l, n)
-
-			self.board[l, n] = Piece(self.board[l, n].colour, PieceType.QUEEN)
-			squares = gay_squares + straight_squares
+				new_letter+=letter
+				new_number+=number
+				if 0 <= new_letter < 8 and 0 <= new_number < 8 and self.board[new_letter, new_number].colour != self.board[new_letter, new_number].colour: # add to list if you can take the next piece
+					squares.append((new_letter, new_number))
 
 		elif pieceType == PieceType.PAWN:
 			direction = 1 if self.board[l, n].colour == Colour.WHITE else -1
@@ -471,6 +429,9 @@ class Game:
 	def attacks(position, l, n):
 		squares = []
 
+		if not position[l, n]:
+			return squares
+		
 		pieceType = position[l, n].type
 		if pieceType == None:
 			return squares
