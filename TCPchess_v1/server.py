@@ -3,8 +3,9 @@
 import socket
 import sys
 
-from Chess import *
+from gui import *
 from threading import Thread
+from gui import *
 
 # Create the socket on which the server will receive new connections
 srv_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -44,10 +45,15 @@ def fight(addr1, sock1, addr2, sock2): # start the fight between 2 clients
 	
 	game = Game(addr1, addr2) #initialize the game instance
 
+	root = tk.Tk()
+	gui = ChessGUI(root, game)
 
 	while True: #send moves between clients untill game finishes
 
 		game.displayBoard()
+		gui.update_board()
+		root.update()
+
 		move = sock1.recv(4096).decode().strip()
 		move = validateMove(move, sock1, game)
 		game.makeMove(move)
@@ -59,6 +65,9 @@ def fight(addr1, sock1, addr2, sock2): # start the fight between 2 clients
 		sock2.sendall(move.encode() + b'\n') #send move to black
 
 		game.displayBoard()
+		gui.update_board()
+		root.update()
+
 		move = sock2.recv(4096).decode().strip()
 		move = validateMove(move, sock2, game)
 		game.makeMove(move)
@@ -82,6 +91,11 @@ def fight(addr1, sock1, addr2, sock2): # start the fight between 2 clients
 	else:
 		sock1.sendall("You won".encode() + b'\n')
 		sock2.sendall("You lost".encode() + b'\n')
+
+	game.displayBoard()
+	gui.update_board()
+	root.update()
+
 	print(f"{addr1} and {addr2} finished fighting")
 	sock1.close()
 	sock2.close()

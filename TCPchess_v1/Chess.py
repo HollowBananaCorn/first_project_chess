@@ -3,6 +3,15 @@ from copy import copy, deepcopy
 from re import match
 import numpy as np
 
+PIECE_UNICODE = {
+    ("white", "pawn"): "♙", ("black", "pawn"): "♟",
+    ("white", "rook"): "♖", ("black", "rook"): "♜",
+    ("white", "horse"): "♘", ("black", "horse"): "♞",
+    ("white", "bishop"): "♗", ("black", "bishop"): "♝",
+    ("white", "queen"): "♕", ("black", "queen"): "♛",
+    ("white", "king"): "♔", ("black", "king"): "♚"
+}
+
 class Colour(Enum):
     WHITE = "white"
     BLACK = "black"
@@ -42,7 +51,7 @@ class Game:
 		
 
 		# make an empty 8x8 board
-		self.board = np.full((8, 8), None, dtype=object)
+		self.board = Game.create_empty_board()
 
 		# set up the starting position
 		self.initialize_start_board()
@@ -530,6 +539,26 @@ class Game:
 
 		return True
 
+	# def displayBoard(self):
+	# 	for row in self.board:
+	# 		print([str(piece) if piece else "Empty" for piece in row])
+
+	@staticmethod
+	def create_empty_board():
+		return np.full((8, 8), fill_value  = None, dtype=object)
+	
+	def set_board(self, position):
+		self.board = position
+
+	def set_turn(self, colour):
+		self.turn = colour
+		
 	def displayBoard(self):
-		for row in self.board:
-			print([str(piece) if piece else "Empty" for piece in row])
+		print("   1   2   3   4   5   6   7   8")
+		for row in range(8):
+			print(chr(ord('a')+row) + "|", end=" ")
+			print(" | ".join(
+				PIECE_UNICODE.get((piece.colour.value, piece.type.value)) if piece else "·"
+				for piece in self.board[row]
+			))
+			print("-" * 33)
